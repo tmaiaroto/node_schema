@@ -1,0 +1,25 @@
+/*div#schema-fields { float: left; }*/
+div#schema-fields a { clear: both; }
+
+div.schema-field { padding: 0px; background-color: #efefef; float: left; margin-bottom: 10px; }
+div.schema-field .actions { margin: 0px 15px 0px 0px; padding: 0px; text-align: right; }
+div.schema-field .actions a { font-weight: bold; text-decoration: none; }
+div.schema-field .actions a:hover { text-decoration: underline; }
+div.schema-field .fields { margin: -15px 0px 0px 0px; }
+div.schema-field .input { margin-left: 10px; margin-right: 10px; float: left; }
+div.schema-field .input textarea { height: 60px; }
+
+.node_schema_expand_section_arrow {
+	float: left;
+	padding-top: 4px;
+}
+h3.node_schema_section_title {	
+	text-decoration: none;
+	border-bottom: 1px solid #ccc;
+}
+a.node_schema_section_title_link{	
+	text-decoration: none;
+}
+.node_schema_section {
+	margin-top: 15px;
+}
