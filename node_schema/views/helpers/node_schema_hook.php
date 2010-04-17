@@ -112,7 +112,8 @@ class NodeSchemaHookHelper extends AppHelper {
     	// IF ADMIN ADD
     	if(($this->action == 'admin_add') && ($this->params['controller'] == 'nodes')) { 
     		$this->Html->scriptBlock($this->addFormSection('add'), array('inline' => false));	
-    	}   	
+    	}
+    	   	    	
     }
 /**
  * After render callback. Called after the view file is rendered
@@ -120,7 +121,19 @@ class NodeSchemaHookHelper extends AppHelper {
  *
  * @return void
  */
-    function afterRender() {    	
+    function afterRender() { 
+    	// IF ADMIN any action, we want to add our menu items to the content menu
+    	if((isset($this->params['admin'])) && ($this->params['admin'] == 1)) {
+    		echo $this->Html->scriptBlock('
+    			$("#nav .sf-menu li:nth-child(2) ul:first").append(\'<li>'. $this->Html->link('<span class="ui-icon ui-icon-calculator"></span>'.__('Node Schema', true), '/admin/node_schema/node_schemas/index', array('escape' => false)) .'<ul><li>'. $this->Html->link('<span class="ui-icon ui-icon-calculator"></span>'.__('List', true), '/admin/node_schema/node_schemas/index', array('escape' => false)) .'</li><li>'. $this->Html->link('<span class="ui-icon ui-icon-plus"></span>'.__('Add New', true), '/admin/node_schema/node_schemas/add', array('escape' => false)) .'</li></ul></li>\');
+    		');
+    	}
+    	   	
+    	if($this->params['controller'] == 'nodes') {
+    		if(($this->action == 'admin_add') || ($this->action == 'admin_edit')) {
+       			echo $this->Html->css(array('/node_schema/css/schemas'));    	
+       		}
+    	}
     }
 /**
  * Before layout callback. Called before the layout is rendered.
@@ -134,12 +147,7 @@ class NodeSchemaHookHelper extends AppHelper {
  *
  * @return void
  */
-    function afterLayout() {
-    	if($this->params['controller'] == 'nodes') {
-    		if(($this->action == 'admin_add') || ($this->action == 'admin_edit')) {
-       			echo $this->Html->css(array('/node_schema/css/schemas'), null, array(), false);    	
-       		}
-    	}
+    function afterLayout() {      		
     }
 /**
  * Called after LayoutHelper::setNode()
