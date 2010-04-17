@@ -24,12 +24,7 @@ class NodeSchemaHookHelper extends AppHelper {
     
     function addFormSection($action='add') {
     	// TODO: $actions to become $form_id .... try to dynamically get and pass the id of the form   	
-    	if($action == 'edit') {
-    		return '$("NodeAdminEditForm")';
-    	} 
-    	
-    	if($action == 'add') {
-    		$jsBlock = '$(document).ready(function() { '; // open
+	   		$jsBlock = '$(document).ready(function() { '; // open
     
     		$i=0;
     		foreach($this->Layout->View->viewVars['node_schema_model_classes'] as $model) {
@@ -64,14 +59,24 @@ class NodeSchemaHookHelper extends AppHelper {
     					break;
     				}
     			}
+    			// For edit
+    			if($action == 'edit') {
+    				foreach($model->_schema as $k => $v) {
+    					if($k == 'id') {
+    						$jsBlock .= '$("#'.$model->alias.'SectionContent").append(\''.$this->Form->input($model->alias.'.'.$k, array('type' => 'hidden')).'\'); '; 
+    					}
+    				}
+    			}
+    		
     			// Add in hidden field that cues us into a list of additional schema
     			$jsBlock .= '$("#'.$model->alias.'SectionContent").append(\''.$this->Form->input('NodeSchemas.'.$i.'.modelClass', array('value' => $model->alias, 'type' => 'hidden')).'\'); '; 
     			$i++;
     		}
     	
+    	
     		$jsBlock .= ' });'; // close
     		return $jsBlock;
-    	}
+    	
     }
     
     
@@ -100,6 +105,7 @@ class NodeSchemaHookHelper extends AppHelper {
     	// IF ADMIN EDIT
     	if(($this->action == 'admin_edit') && ($this->params['controller'] == 'nodes')) { 
     		$this->Html->scriptBlock($this->addFormSection('edit'), array('inline' => false));	 
+    		//debug($this->Layout->View->viewVars);
     		
     	} 
     	

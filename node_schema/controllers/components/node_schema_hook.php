@@ -95,8 +95,7 @@ class NodeSchemaHookComponent extends Object {
     	}
         
         // Admin menu: admin_menu element of NodeSchema plugin will be shown in admin panel's navigation
-        Configure::write('Admin.menus.node_schema', 1);
-        //debug($this->controller->Node->find('all'));       
+        Configure::write('Admin.menus.node_schema', 1);        
         $this->controller =& $controller;
         
         // NON-ADMIN METHODS NEED TO GET DATA MERGED IN
@@ -117,42 +116,53 @@ class NodeSchemaHookComponent extends Object {
 		    }   
         }
        
-       //	 debug($this->controller->viewVars); // this would show all the fused data
+        // debug($this->controller->viewVars); // this would show all the fused data
         
         // Type Alias stored here: $controller->viewVars['typeAlias']
         // Type here: $controller->viewVars['type']['Type']['id'] and so on
         
         // SOME ADMIN METHODS - NEED VALUES FOR FORMS (NodeSchemaHelper hook's calls to form helper need this data)
-        if((isset($this->controller->action)) && ($this->controller->action == 'admin_add')) {
-	        // No reason for this not to be set, but lets check anyway
-	        if(isset($controller->viewVars['type']['Type']['id'])) {
-	        	$this->controller->loadModel('NodeSchema.NodeSchema'); // Load the model so we can associate
-	        	$this->controller->NodeSchema->bindModel(array('hasOne' => array('NodeSchemasType')));
-				$schemas = $this->controller->NodeSchema->find('all', array(
-						'fields' => array('NodeSchema.table_name', 'NodeSchema.title'),
-						'conditions'=>array('NodeSchemasType.type_id'=> $controller->viewVars['type']['Type']['id'])
-				));
-				// We now have the schemas associated with this type
-				// We'll loop through that to generate model classes using classify() ...
-				// This will serve another loop in the helper to output $form->input('ModelName.FIELD')
-				// As well as create full models which have benefits like caching and validation now too			
-				$modelClasses = array();
-				foreach($schemas as $schema) {
-					// Instantiate
-					$model = new Model(false, $schema['NodeSchema']['table_name']);
-			        $model->alias = Inflector::classify($schema['NodeSchema']['table_name']);
-					$model->recursive = -1; // There's no associations anyway
-					// TODO: add validation rules (added/edited and stored somewhere, where yet I don't know)
-					
-					$model->userTitle = $schema['NodeSchema']['title']; // Cool, we'll use this on the form
-					// Build an array of model objects
-					$modelClasses[] = $model;
-					
-				}
-				// Set to view so form helper can use
-				$controller->viewVars['node_schema_model_classes'] = $modelClasses;
-			//	debug($controller->viewVars['node_schema_model_classes']);
-	        }
+        if($this->controller->params['controller'] == 'nodes') {
+        	if(($this->controller->action == 'admin_add') || ($this->controller->action == 'admin_edit')) {
+		        // No reason for this not to be set, but lets check anyway
+		        if(isset($controller->viewVars['type']['Type']['id'])) {
+		        	$this->controller->loadModel('NodeSchema.NodeSchema'); // Load the model so we can associate
+		        	$this->controller->NodeSchema->bindModel(array('hasOne' => array('NodeSchemasType')));
+					$schemas = $this->controller->NodeSchema->find('all', array(
+							'fields' => array('NodeSchema.table_name', 'NodeSchema.title'),
+							'conditions'=>array('NodeSchemasType.type_id'=> $controller->viewVars['type']['Type']['id'])
+					));
+					// We now have the schemas associated with this type
+					// We'll loop through that to generate model classes using classify() ...
+					// This will serve another loop in the helper to output $form->input('ModelName.FIELD')
+					// As well as create full models which have benefits like caching and validation now too			
+					$modelClasses = array();
+					foreach($schemas as $schema) {
+						// Instantiate
+						$model = new Model(false, $schema['NodeSchema']['table_name']);
+				        $model->alias = Inflector::classify($schema['NodeSchema']['table_name']);
+						$model->recursive = -1; // There's no associations anyway
+						// TODO: add validation rules (added/edited and stored somewhere, where yet I don't know)
+						
+						$model->userTitle = $schema['NodeSchema']['title']; // Cool, we'll use this on the form
+						// Build an array of model objects
+						$modelClasses[] = $model;
+						
+						// IF admin_edit, set some more data into $controller->data
+		        		if(($this->controller->params['controller'] == 'nodes') && ($this->controller->action == 'admin_edit')) {
+							$schema_data = $model->find('first', array('conditions' => array('node_id' => $controller->data['Node']['id'])));
+							if($schema_data) {
+								$key = key($schema_data);
+								$controller->data[$key] = $schema_data[$key];								
+							}						
+		        		}
+		        		
+					}
+					// Set to view so form helper can use
+					$controller->viewVars['node_schema_model_classes'] = $modelClasses;
+					// debug($controller->viewVars['node_schema_model_classes']);
+		        }
+			}
         }
         
         
