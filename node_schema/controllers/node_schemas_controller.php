@@ -11,7 +11,7 @@ class NodeSchemasController extends NodeSchemaAppController {
 		$this->nodeSchemaPath = APP.'plugins'.DS.'node_schema'.DS.'config'.DS.'schema';
 		parent::__construct();
 	}
-	
+		
 	function admin_index() {
         $this->set('title_for_layout', __('Node Schema', true));
         $this->NodeSchema->recursive = 0;
@@ -22,13 +22,7 @@ class NodeSchemasController extends NodeSchemaAppController {
 	function admin_add() {
 		$this->set('title_for_layout', __('Add Node Schema', true));
 		
-        if (!empty($this->data)) {
-        	// CSRF Protection
-            if ($this->params['_Token']['key'] != $this->data['NodeSchema']['token_key']) {
-                $blackHoleCallback = $this->Security->blackHoleCallback;
-                $this->$blackHoleCallback();
-            }
-
+        if (!empty($this->data)) {        	
             $this->NodeSchema->create();
             if ($this->NodeSchema->saveAll($this->data)) {
                 $this->Session->setFlash(__('The Node Schema has been saved', true));
@@ -38,6 +32,7 @@ class NodeSchemasController extends NodeSchemaAppController {
             }
         }
         
+               
         $types = $this->NodeSchema->Type->find('list');
         $this->set(compact('types'));
 	}
@@ -45,16 +40,11 @@ class NodeSchemasController extends NodeSchemaAppController {
 	function admin_edit($id = null) {
         $this->set('title_for_layout', __('Edit Node Schema', true));
 
-        if (!$id && empty($this->data)) {
+        if(!$id && empty($this->data)) {
             $this->Session->setFlash(__('Invalid Node Schema', true));
             $this->redirect(array('action'=>'index'));
         }
-        if (!empty($this->data)) {
-        	// CSRF Protection
-            if ($this->params['_Token']['key'] != $this->data['NodeSchema']['token_key']) {
-                $blackHoleCallback = $this->Security->blackHoleCallback;
-                $this->$blackHoleCallback();
-            }
+        if(!empty($this->data)) {        	                
             if ($this->NodeSchema->saveAll($this->data)) {
                 $this->Session->setFlash(__('The Node Schema has been saved', true));
                 $this->redirect(array('action'=>'index'));
@@ -62,7 +52,7 @@ class NodeSchemasController extends NodeSchemaAppController {
                 $this->Session->setFlash(__('The Node Schema could not be saved. Please, try again.', true));
             }
         }
-        if (empty($this->data)) {
+        if(empty($this->data)) {
             $this->data = $this->NodeSchema->read(null, $id);
         }
 
@@ -161,12 +151,7 @@ class NodeSchemasController extends NodeSchemaAppController {
     
     function admin_import() {
     	$this->set('title_for_layout', __('Import Node Schema', true));
-        if (!empty($this->data)) {
-        	 // CSRF Protection
-            if ($this->params['_Token']['key'] != $this->data['NodeSchema']['token_key']) {
-                $blackHoleCallback = $this->Security->blackHoleCallback;
-                $this->$blackHoleCallback();
-            }
+        if (!empty($this->data)) {        	
 			// Set datasource // TODO
 			$data_source = 'default'; // $this->data['NodeSchema']['datasource'];
 			
@@ -283,11 +268,7 @@ class NodeSchemasController extends NodeSchemaAppController {
 		if(!empty($created)) {
 			//debug('Successfully imported the schema.');
 			// Continue on to save a record in the node_schemas table
-			// CSRF Protection
-            if($this->params['_Token']['key'] != $data['NodeSchema']['token_key']) {
-                $blackHoleCallback = $this->Security->blackHoleCallback;
-                $this->$blackHoleCallback();
-            }
+			
 			// Let's see if we're updating a record or saving a new one (remember imports can overwrite existing schema)
 			$this->NodeSchema->recursive = -1;
 			$result = $this->NodeSchema->find('first', array('conditions' => array('NodeSchema.table_name' => $table_name)));			
