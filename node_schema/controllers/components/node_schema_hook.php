@@ -230,28 +230,30 @@ class NodeSchemaHookComponent extends Object {
 						$node_id = $controller->viewVars['node']['Node']['id'];
 					}		
 					$results = $model->find('first', array('fields' => array($model->alias.'.*'), 'conditions' => array($model->alias.'.node_id' => $node_id)));	
-					
-					// Set this just because it's good reference, but we do want to merge and adjust the Node data to better fuse these new values
-					if(!empty($node)) {
-						// Multiple results
-						$controller->viewVars['nodes'][$i] .= $results;
-					} else {
-						// Single result
-						$controller->viewVars['node'] .= $results;
-					}
-					if(isset($results[$model->alias]['id'])) { unset($results[$model->alias]['id']); }
-					if(isset($results[$model->alias]['node_id'])) { unset($results[$model->alias]['node_id']); }
-					
-					// Now merge the data
-					if(!empty($node)) {
-						// Multiple results
-						if((is_array($controller->viewVars['nodes'][$i]['Node'])) && (is_array($results[$model->alias]))) {
-							array_merge($controller->viewVars['nodes'][$i]['Node'], $results[$model->alias]);
+					// If there was a record found
+					if($results) {
+						// Set this just because it's good reference, but we do want to merge and adjust the Node data to better fuse these new values
+						if(!empty($node)) {
+							// Multiple results
+							$controller->viewVars['nodes'][$i] .= $results;
+						} else {
+							// Single result
+							$controller->viewVars['node'] .= $results;
 						}
-					} else {
-						// Single result
-						if((is_array($controller->viewVars['node']['Node'])) && (is_array($results[$model->alias]))) {
-							array_merge($controller->viewVars['node']['Node'], $results[$model->alias]);
+						if(isset($results[$model->alias]['id'])) { unset($results[$model->alias]['id']); }
+						if(isset($results[$model->alias]['node_id'])) { unset($results[$model->alias]['node_id']); }
+						
+						// Now merge the data
+						if(!empty($node)) {
+							// Multiple results
+							if((is_array($controller->viewVars['nodes'][$i]['Node'])) && (is_array($results[$model->alias]))) {
+								array_merge($controller->viewVars['nodes'][$i]['Node'], $results[$model->alias]);
+							}
+						} else {
+							// Single result
+							if((is_array($controller->viewVars['node']['Node'])) && (is_array($results[$model->alias]))) {
+								array_merge($controller->viewVars['node']['Node'], $results[$model->alias]);
+							}
 						}
 					}
 				}				
