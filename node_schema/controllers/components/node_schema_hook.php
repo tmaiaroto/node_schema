@@ -234,21 +234,25 @@ class NodeSchemaHookComponent extends Object {
 					// Set this just because it's good reference, but we do want to merge and adjust the Node data to better fuse these new values
 					if(!empty($node)) {
 						// Multiple results
-						$controller->viewVars['nodes'][$i] += $results;
+						$controller->viewVars['nodes'][$i] .= $results;
 					} else {
 						// Single result
-						$controller->viewVars['node'] += $results;
+						$controller->viewVars['node'] .= $results;
 					}
-					unset($results[$model->alias]['id']);
-					unset($results[$model->alias]['node_id']);
+					if(isset($results[$model->alias]['id'])) { unset($results[$model->alias]['id']); }
+					if(isset($results[$model->alias]['node_id'])) { unset($results[$model->alias]['node_id']); }
 					
 					// Now merge the data
 					if(!empty($node)) {
 						// Multiple results
-						array_merge($controller->viewVars['nodes'][$i]['Node'] += $results[$model->alias]);
+						if((is_array($controller->viewVars['nodes'][$i]['Node'])) && (is_array($results[$model->alias]))) {
+							array_merge($controller->viewVars['nodes'][$i]['Node'], $results[$model->alias]);
+						}
 					} else {
 						// Single result
-						array_merge($controller->viewVars['node']['Node'] += $results[$model->alias]);
+						if((is_array($controller->viewVars['node']['Node'])) && (is_array($results[$model->alias]))) {
+							array_merge($controller->viewVars['node']['Node'], $results[$model->alias]);
+						}
 					}
 				}				
 			}
