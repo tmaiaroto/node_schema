@@ -235,10 +235,12 @@ class NodeSchemaHookComponent extends Object {
 						// Set this just because it's good reference, but we do want to merge and adjust the Node data to better fuse these new values
 						if(!empty($node)) {
 							// Multiple results
-							$controller->viewVars['nodes'][$i] .= $results;
+							//$controller->viewVars['nodes'][$i] .= $results;
+							$controller->viewVars['NodeSchema'][$model->alias][$i] = $results;
 						} else {
 							// Single result
-							$controller->viewVars['node'] .= $results;
+							//$controller->viewVars['node'] .= $results;
+							$controller->viewVars['NodeSchema'][$model->alias] = $results;
 						}
 						if(isset($results[$model->alias]['id'])) { unset($results[$model->alias]['id']); }
 						if(isset($results[$model->alias]['node_id'])) { unset($results[$model->alias]['node_id']); }
