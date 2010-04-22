@@ -248,13 +248,13 @@ class NodeSchemaHookComponent extends Object {
 						// Now merge the data
 						if(!empty($node)) {
 							// Multiple results
-							if((is_array($controller->viewVars['nodes'][$i]['Node'])) && (is_array($results[$model->alias]))) {
-								array_merge($controller->viewVars['nodes'][$i]['Node'], $results[$model->alias]);
+							if((is_array($this->controller->viewVars['nodes'][$i]['Node'])) && (is_array($results[$model->alias]))) {
+								$this->controller->viewVars['nodes'][$i]['Node'] = array_merge($this->controller->viewVars['nodes'][$i]['Node'], $results[$model->alias]);
 							}
 						} else {
 							// Single result
-							if((is_array($controller->viewVars['node']['Node'])) && (is_array($results[$model->alias]))) {
-								array_merge($controller->viewVars['node']['Node'], $results[$model->alias]);
+							if((is_array($this->controller->viewVars['node']['Node'])) && (is_array($results[$model->alias]))) {
+								$this->controller->viewVars['node']['Node'] = array_merge($this->controller->viewVars['node']['Node'], $results[$model->alias]);
 							}
 						}
 					}
